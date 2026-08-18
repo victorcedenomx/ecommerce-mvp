@@ -12,27 +12,7 @@ struct ProductRowView: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            AsyncImage(url: product.thumbnailURL) { phase in
-                switch phase {
-                case .empty:
-                    ProgressView()
-                    
-                case .success(let image):
-                    image
-                        .resizable()
-                        .scaledToFit()
-                    
-                case .failure:
-                    Image(systemName: "photo")
-                        .foregroundStyle(.secondary)
-                    
-                @unknown default:
-                    EmptyView()
-                }
-            }
-            .frame(width: 72, height: 72)
-            .background(Color(.systemGray6))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            ProductImageView(url: product.thumbnailURL)
             
             VStack(alignment: .leading, spacing: 6) {
                 Text(product.title)
