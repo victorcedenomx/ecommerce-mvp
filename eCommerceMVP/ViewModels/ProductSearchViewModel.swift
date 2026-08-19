@@ -25,7 +25,7 @@ final class ProductSearchViewModel: ObservableObject {
     private var searchTask: Task<Void, Never>?
     
     init(
-        apiService: APIService = APIService(),
+        apiService: APIService,
         historyStore: SearchHistoryStore = SearchHistoryStore()
     ) {
         self.apiService = apiService
@@ -82,15 +82,17 @@ final class ProductSearchViewModel: ObservableObject {
     }
     
     func loadNextPageIfNeeded(currentProduct: Product) {
-        guard let lastProduct = products.last else {
-            return
-        }
-        
-        guard currentProduct.id == lastProduct.id else {
-            return
-        }
-        
         guard !isLoading, !isLoadingNextPage, canLoadMorePages else {
+            return
+        }
+        
+        guard let currentIndex = products.firstIndex(where: { $0.id == currentProduct.id }) else {
+            return
+        }
+        
+        let thresholdIndex = products.index(products.endIndex, offsetBy: -5)
+        
+        guard currentIndex >= thresholdIndex else {
             return
         }
         
