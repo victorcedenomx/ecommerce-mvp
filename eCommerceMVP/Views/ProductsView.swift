@@ -8,7 +8,15 @@
 import SwiftUI
 
 struct ProductsView: View {
-    @StateObject private var viewModel = ProductSearchViewModel()
+    @StateObject private var viewModel: ProductSearchViewModel
+
+    init(apiKey: String) {
+        _viewModel = StateObject(
+            wrappedValue: ProductSearchViewModel(
+                apiService: APIService(apiKey: apiKey)
+            )
+        )
+    }
     
     var body: some View {
         NavigationStack {
@@ -92,28 +100,41 @@ struct ProductsView: View {
             Spacer()
         } else if viewModel.products.isEmpty {
             Spacer()
-            Text("Ingresa un producto para comenzar")
+            Text("Ingresa un producto para comenzar.")
                 .foregroundStyle(.secondary)
             Spacer()
         } else {
-            List(viewModel.products) { product in
-                ProductRowView(product: product)
-                    .onAppear {
-                        viewModel.loadNextPageIfNeeded(currentProduct: product)
-                    }
+            List {
+                ForEach(viewModel.products) { product in
+                    ProductRowView(product: product)
+                        .padding(.horizontal)
+                        .listRowInsets(EdgeInsets())
+                        .onAppear {
+                            viewModel.loadNextPageIfNeeded(currentProduct: product)
+                        }
+                }
                 
-                if product.id == viewModel.products.last?.id,
-                   viewModel.isLoadingNextPage {
-                    HStack {
-                        Spacer()
-                        ProgressView()
-                        Spacer()
-                    }
-                    .listRowInsets(EdgeInsets())
+                if viewModel.isLoadingNextPage {
+                    paginationLoadingRow
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
                 }
             }
             .listStyle(.plain)
             .scrollDismissesKeyboard(.interactively)
         }
+    }
+    
+    private var paginationLoadingRow: some View {
+        HStack(spacing: 8) {
+            ProgressView()
+                .controlSize(.small)
+            
+            Text("Cargando más productos...")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 16)
     }
 }

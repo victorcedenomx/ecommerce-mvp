@@ -11,7 +11,7 @@ import SwiftUI
 struct eCommerceMVPApp: App {
     var body: some Scene {
         WindowGroup {
-            ProductsView()
+            RootView()
         }
     }
 }

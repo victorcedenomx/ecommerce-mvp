@@ -9,6 +9,11 @@ import Foundation
 
 struct APIService: Sendable {
     private let baseURL = "https://axesso-walmart-data-service.p.rapidapi.com/wlm/walmart-search-by-keyword"
+    private let apiKey: String
+    
+    init(apiKey: String) {
+        self.apiKey = apiKey
+    }
     
     func searchProducts(
         keyword: String,
@@ -28,9 +33,7 @@ struct APIService: Sendable {
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        
-        // TODO: Replace with the API Key shared privately
-        request.setValue("", forHTTPHeaderField: "x-rapidapi-key")
+        request.setValue(apiKey, forHTTPHeaderField: "x-rapidapi-key")
         
         print("Request URL:", url.absoluteString)
         
